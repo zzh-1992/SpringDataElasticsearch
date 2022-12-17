@@ -24,6 +24,7 @@ The following guides illustrate how to use some features concretely:
 ### Spring Elastic Documentation
 [spring-data/elasticsearch](https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#upgrading)
 
+## 2.Elasticsearch
 ### Elasticsearch Install
 [install-macos](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/targz.html#install-macos)
 ```shell
@@ -36,4 +37,48 @@ cd elasticsearch-7.17.8/
 
 ### Set Password
 [elasticsearch password](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/setup-passwords.html#setup-passwords)
+
+## 3.Logstash
+### dependencies
+```xml
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>7.0</version>
+        </dependency>
+```
+### server log
+```java
+Logger logger = LoggerFactory.getLogger(SpringDataElasticsearchApplication.class);
+
+logger.error("my manual error");
+```
+
+### filename:springboot-log.conf
+```conf
+input{
+	tcp {
+        mode => "server"
+        host => "0.0.0.0"
+        port => 8888
+        codec => json_lines
+	}
+}
+
+output{
+	elasticsearch{
+	    hosts=>["127.0.0.1:9200"]
+	    index => "springboot"
+		user=>***
+	    password=>***
+    }
+	stdout{
+		codec => rubydebug
+	}
+}
+```
+### start
+```shell
+bin/logstash -f config/springboot-log.conf
+```
 
