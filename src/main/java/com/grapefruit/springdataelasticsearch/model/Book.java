@@ -4,6 +4,7 @@
 
 package com.grapefruit.springdataelasticsearch.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 /**
- * 功能
+ * 实体-book
  *
  * @Author ZhangZhihuang
  * @Date 2022/12/15 19:52
@@ -23,7 +24,11 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+// @Document->用于spring.data.elasticsearch标注实体类与索引(索引类似关系型数据库中的表)
 @Document(indexName="books")
+
+// @TableName ->mybatisplus用于映射实体类于数据库中的表
+@TableName("books")
 @Data
 public class Book {
     @Id
