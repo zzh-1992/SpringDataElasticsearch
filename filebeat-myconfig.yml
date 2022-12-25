@@ -1,0 +1,75 @@
+# 定义 springredis、springes等应用的input类型、以及存放的具体路径
+filebeat.inputs:
+  - type: filestream
+    enabled: true
+    paths:
+      - /Users/zhihuangzhang/Downloads/myLog/redislog/*.log
+    fields:
+      module: springredis
+  - type: filestream
+    enabled: true
+    paths:
+      - /Users/zhihuangzhang/Downloads/myLog/es/*.log
+    fields:
+      module: springes
+  - type: filestream
+    enabled: true
+    paths:
+      - /Users/zhihuangzhang/Downloads/myLog/mykafka/*.log
+    fields:
+      module: springkafka
+    parsers:
+      # 多行日志合并
+      - multiline:
+          type: pattern
+          # 正则表达 类似2022/12/25
+          pattern: '^[0-9]{4}/[0-9]{2}/[0-9]{2}'
+          negate: true
+          match: after
+
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: true
+
+setup.template.settings:
+  index.number_of_shards: 1
+
+# 定义kibana的IP:PORT
+setup.kibana:
+  host: "127.0.0.1:5601"
+
+# 定义模板的相关信息  
+setup.template.name: "grapefruit_log"
+setup.template.pattern: "grapefruit-*"
+setup.template.overwrite: true
+setup.template.enabled: true
+# 自定义ES的索引需要把ilm设置为false
+setup.ilm.enabled: false
+
+# 定义 springredis、springkafka、springes的output
+output.elasticsearch:
+  # 定义ES的IP:PORT
+  hosts: ["127.0.0.1:9200"]
+  username: "elastic"
+  password: "wYoeMQMXDIGmpi2pxgKi"
+  # 这里的index前缀lile与模板的pattern匹配，中间这一串设置为field.module变量，方面后面具体的匹配
+  index: "grapefruit-%{[fields.module]}-*"
+  indices:
+    # 这里的前缀 grapefruit 同为与模板的pattern匹配，中间为field.module具体的值，当前面的input的field.module值与这里的匹配时，则index设置为定义的
+    - index: "grapefruit-springredis-%{+yyyy.MM.dd}"
+      when.equals:
+        fields:
+          module: "springredis"
+    - index: "grapefruit-springkafka-%{+yyyy.MM.dd}"
+      when.equals:
+        fields:
+          module: "springkafka"
+    - index: "grapefruit-springes-%{+yyyy.MM.dd}"
+      when.equals:
+        fields:
+          module: "springes"
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~

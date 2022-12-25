@@ -82,3 +82,34 @@ output{
 bin/logstash -f config/springboot-log.conf
 ```
 
+## 4 filebeat
+## 4.1 config
+file path:{$filebeat}/filebeat.yml
+
+### 4.2 start
+copy from /{path}/filebeat-7.17.8-darwin-x86_64/README.md
+```shell
+./filebeat -c filebeat.yml -e
+```
+or
+```shell
+./filebeat -c filebeat-myconfig.yml -e
+```
+### 4.3 multiline config
+```yaml
+filebeat.inputs:
+  - type: filestream
+    enabled: true
+    paths:
+      - /Users/zhihuangzhang/Downloads/myLog/mykafka/*.log
+    fields:
+      module: springkafka
+    parsers:
+      # 多行日志合并
+      - multiline:
+          type: pattern
+          # 正则表达 类似2022/12/25
+          pattern: '^[0-9]{4}/[0-9]{2}/[0-9]{2}'
+          negate: true
+          match: after
+```
