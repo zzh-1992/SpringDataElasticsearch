@@ -1,0 +1,67 @@
+# 8.0版本配置
+filebeat.inputs:
+
+- type: filestream
+  id: my-kafka
+  enabled: true
+
+  paths:
+    - /Users/user/mykafka/*.log
+  parsers:
+    - multiline:
+        type: pattern
+        pattern: '^[0-9]{4}/[0-9]{2}/[0-9]{2}'
+        negate: true
+        match: after
+
+  fields.tag: kafka
+- type: filestream
+  id: my-es
+  enabled: true
+  paths:
+    - /Users/user/myLog/es/*.log
+  fields.tag: springes
+  parsers:
+    - multiline:
+        type: pattern
+        pattern: '^[0-9]{4}/[0-9]{2}/[0-9]{2}'
+        negate: true
+        match: after  
+
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+setup.template.settings:
+  index.number_of_shards: 1
+  #index.codec: best_compression
+  #_source.enabled: false
+
+
+
+# =================================== Kibana ===================================
+
+# Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
+# This requires a Kibana endpoint configuration.
+setup.kibana:
+  host: "localhost:5601"
+
+output.elasticsearch:
+  hosts: ["localhost:9201"]
+  #username: "elastic"
+  #password: "changeme"
+  indices:
+    - index: "grape-kafka-%{+yyyy.MM.dd}"
+      when.contains.fields.tag: kafka
+    - index: "grape-springes-%{+yyyy.MM.dd}"
+      when.contains.fields.tag: springes
+
+# ================================= Processors =================================
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
