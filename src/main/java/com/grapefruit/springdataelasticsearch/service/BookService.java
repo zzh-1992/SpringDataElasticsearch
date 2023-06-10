@@ -1,26 +1,26 @@
 /*
- *Copyright @2022 Grapefruit. All rights reserved.
+ *Copyright @2023 Grapefruit. All rights reserved.
  */
+package com.grapefruit.springdataelasticsearch.service;
 
-package com.grapefruit.springdataelasticsearch.mapper;
-
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.grapefruit.springdataelasticsearch.model.Book;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-@Mapper
-public interface BookMapper extends BaseMapper<Book> {
+/**
+ * 功能
+ *
+ * @Author ZhangZhihuang
+ * @Date 10/6/2023 3:08 pm
+ * @Version 1.0
+ */
+public interface BookService {
     /**
      * 精确查询
      *
      * @param name name
      * @return page
      */
-    @Select("select * from my_database.books where name = #{name}")
     List<Book> findByName(String name);
 
     /**
@@ -28,7 +28,6 @@ public interface BookMapper extends BaseMapper<Book> {
      *
      * @return list
      */
-    @Select("select * from my_database.books")
     List<Book> findAll();
 
     /**

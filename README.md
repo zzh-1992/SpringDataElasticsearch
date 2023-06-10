@@ -1,5 +1,8 @@
 # Getting Started
 
+### 说明
+ElasticSearch 8.5.3需要使用高版依赖,同时基于springboot3,jdk20
+
 ### Reference Documentation
 
 For further reference, please consider the following sections:

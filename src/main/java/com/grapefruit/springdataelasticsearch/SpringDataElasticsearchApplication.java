@@ -5,22 +5,26 @@
 package com.grapefruit.springdataelasticsearch;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.grapefruit.springdataelasticsearch.mapper.BookMapper;
 import com.grapefruit.springdataelasticsearch.model.Book;
 import com.grapefruit.springdataelasticsearch.repository.BookRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.grapefruit.springdataelasticsearch.service.BooksCkService;
+import com.grapefruit.springdataelasticsearch.service.BooksMysqlService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@Slf4j
 public class SpringDataElasticsearchApplication {
 
     public static void main(String[] args) {
@@ -28,48 +32,70 @@ public class SpringDataElasticsearchApplication {
     }
 
     @Autowired
-    BookRepository bookRepository;
+    private BookRepository bookRepository;
 
-    Logger logger = LoggerFactory.getLogger(SpringDataElasticsearchApplication.class);
+    @Autowired
+    private BooksCkService booksCkService;
+
+    @Autowired
+    private BooksMysqlService booksMysqlService;
 
     @Bean
     public CommandLineRunner elasticSearch() {
         return (args) -> {
+            String time = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss").format(LocalDateTime.now());
             // save data
-            bookRepository.save(Book.builder().name("aaaa").price(10).build());
+            bookRepository.save(Book.builder().name("grape---" + time).price(10).build());
 
             // find data
             Page<Book> byName = bookRepository.findByName("zfdsfdsfsdohar", Pageable.unpaged());
 
-            logger.info(byName.toString());
+            log.info(byName.toString());
 
             // fuzzy query
             Page<Book> byName2 = bookRepository.findByNameLike("%" + "zo" + "%", Pageable.unpaged());
-            logger.info(byName2.toString());
+            log.info(byName2.toString());
             System.out.println(byName2.toList());
 
-            logger.error("my manual error");
+            log.error("my manual error");
         };
     }
 
-    @Autowired
-    BookMapper bookMapper;
-
     @Bean
-    public CommandLineRunner clickHouse() {
+    public CommandLineRunner ck() {
         return (args) -> {
             // save data
-            bookMapper.insert(Book.builder().name("aaaa").build());
+            booksCkService.save(Book.builder().name("ck-aaaa").build());
 
             // find data
-            List<Book> list = bookMapper.findByName("zohar");
+            List<Book> list = booksCkService.findByName("ck-aaaa");
 
             // query condition
             QueryWrapper<Book> qw = new QueryWrapper<>();
             qw.eq("name", "grape");
 
             // query
-            List<Book> one = bookMapper.selectList(qw);
+            List<Book> one = booksCkService.list(qw);
+
+            System.out.println(list.toString());
+        };
+    }
+
+    @Bean
+    public CommandLineRunner mysql() {
+        return (args) -> {
+            // save data
+            booksMysqlService.save(Book.builder().name("mysql-aaaa").build());
+
+            // find data
+            List<Book> list = booksMysqlService.findByName("mysql-aaaa");
+
+            // query condition
+            QueryWrapper<Book> qw = new QueryWrapper<>();
+            qw.eq("name", "grape");
+
+            // query
+            List<Book> one = booksMysqlService.list(qw);
 
             System.out.println(list.toString());
         };
