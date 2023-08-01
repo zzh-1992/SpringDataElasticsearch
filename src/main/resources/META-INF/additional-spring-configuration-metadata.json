@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "grape.es.project.list",
+      "type": "java.util.List"
+    }
+  ]
+}
