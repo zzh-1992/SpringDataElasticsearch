@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.grapefruit.springdataelasticsearch.mapper.BookMapper;
 import com.grapefruit.springdataelasticsearch.model.Book;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author makejava
  * @since 2023-06-10 14:45:27
  */
+@Slf4j
 @Service
 @DS("ck")
 public class BooksCkService extends ServiceImpl<BookMapper, Book> implements IService<Book>, BookService {
@@ -34,6 +36,17 @@ public class BooksCkService extends ServiceImpl<BookMapper, Book> implements ISe
     @Override
     public List<Book> findNameOrderById(String name) {
         return this.baseMapper.findNameOrderById(name);
+    }
+
+    @Override
+    public void batchsave(List<Book> list) {
+        log.info("begin----------------------------------------------------------------");
+        // 原生批量插入 INSERT INTO table_name (column1, column2) VALUES (?, ?);
+        this.saveBatch(list);
+        log.info("----------------------------------------------------------------");
+        // 自定义插入 INSERT INTO table_name (column1, column2) VALUES (?, ?), (?, ?), (?, ?);
+        this.baseMapper.insertBatchSomeColumn(list);
+        log.info("end----------------------------------------------------------------");
     }
 }
 

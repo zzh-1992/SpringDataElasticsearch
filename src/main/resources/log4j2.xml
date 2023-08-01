@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Properties>
+        <!-- 定义不同日志级别的颜色 -->
+        <Property name="INFO_COLOR">green</Property>
+        <Property name="WARN_COLOR">yellow</Property>
+        <Property name="ERROR_COLOR">red</Property>
+        <!--<Property name="DEBUG_COLOR">white</Property>-->
+    </Properties>
+    <Appenders>
+        <!-- 输出 MyBatisPlus 执行的 SQL 文件 -->
+        <File name="MyBatisSqlAppender" fileName="mybatis-sql.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </File>
+        <!-- 控制台输出，根据不同日志级别显示不同颜色 -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%t] %-5level %logger{36} - %msg%n}{STYLE=%style{%level}{INFO=${INFO_COLOR}, WARN=${WARN_COLOR}, ERROR=${ERROR_COLOR}, DEBUG=${DEBUG_COLOR}}}" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!-- 输出 MyBatisPlus 执行的 SQL 文件 -->
+        <Logger name="com.baomidou.mybatisplus.core.executor" level="DEBUG" additivity="false">
+            <AppenderRef ref="MyBatisSqlAppender" />
+        </Logger>
+        <!-- 分别定义 com 和 org 包下的日志输出 -->
+        <Logger name="com" level="DEBUG" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+        </Logger>
+        <Logger name="sun" level="INFO" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+        </Logger>
+        <Logger name="javax" level="INFO" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+        </Logger>
+        <Logger name="org" level="INFO" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+        </Logger>
+        <!-- Root Logger 输出所有级别的日志 -->
+        <Root level="DEBUG">
+            <AppenderRef ref="ConsoleAppender" />
+        </Root>
+    </Loggers>
+</Configuration>

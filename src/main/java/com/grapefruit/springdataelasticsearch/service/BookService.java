@@ -37,4 +37,6 @@ public interface BookService {
      * @return list
      */
     List<Book> findNameOrderById(String name);
+
+    void batchsave(List<Book> list);
 }

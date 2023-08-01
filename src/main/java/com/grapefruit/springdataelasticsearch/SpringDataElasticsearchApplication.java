@@ -18,13 +18,16 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @Slf4j
+@EnableTransactionManagement
 public class SpringDataElasticsearchApplication {
 
     public static void main(String[] args) {
@@ -65,7 +68,13 @@ public class SpringDataElasticsearchApplication {
     public CommandLineRunner ck() {
         return (args) -> {
             // save data
-            booksCkService.save(Book.builder().name("ck-aaaa").build());
+            // booksCkService.save(Book.builder().name("ck-aaaa").build());
+
+            List<Book> books = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                books.add(Book.builder().name("ck-aaaa" + 1).build());
+            }
+            booksCkService.batchsave(books);
 
             // find data
             List<Book> list = booksCkService.findByName("ck-aaaa");

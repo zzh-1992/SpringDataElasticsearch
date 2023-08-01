@@ -35,4 +35,8 @@ public class BooksMysqlService extends ServiceImpl<BookMapper, Book> implements 
     public List<Book> findNameOrderById(String name) {
         return this.baseMapper.findNameOrderById(name);
     }
+
+    @Override
+    public void batchsave(List<Book> list) {
+    }
 }

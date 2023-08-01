@@ -10,6 +10,7 @@ import com.grapefruit.springdataelasticsearch.model.Book;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Collection;
 import java.util.List;
 
 @Mapper
@@ -38,4 +39,13 @@ public interface BookMapper extends BaseMapper<Book> {
      * @return list
      */
     List<Book> findNameOrderById(String name);
+
+
+    /**
+     * 批量插入
+     *
+     * @param entityList entityList
+     * @return int
+     */
+    Integer insertBatchSomeColumn(Collection<Book> entityList);
 }
